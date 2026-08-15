@@ -6,6 +6,22 @@
   const finishBtn=document.getElementById('saveWorkout');
   if(finishBtn) finishBtn.textContent='Finish Workout';
 
+  // Add Drop Set / Failure to every intensity selector, including newly rendered sets.
+  function addDropSetOptions(){
+    document.querySelectorAll('.setrow select').forEach(sel=>{
+      if(![...sel.options].some(o=>o.value==='Drop Set / Failure')){
+        const opt=document.createElement('option');
+        opt.value='Drop Set / Failure';
+        opt.textContent='Drop Set / Failure';
+        sel.appendChild(opt);
+      }
+    });
+  }
+  const originalRender=render;
+  render=function(){originalRender();addDropSetOptions();};
+  const observer=new MutationObserver(addDropSetOptions);
+  observer.observe(document.getElementById('workout'),{childList:true,subtree:true});
+
   window.editWorkout=function(date){
     const h=getHistory(), w=h.find(x=>x.date===date); if(!w) return;
     daySelect.value=w.day;
@@ -70,5 +86,6 @@
     };
   }
 
+  addDropSetOptions();
   renderHistory();
 })();
